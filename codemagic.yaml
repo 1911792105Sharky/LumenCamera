@@ -1,0 +1,37 @@
+# Codemagic 云端编译配置
+# 用法：把整个 LumenCamera 文件夹打包成 zip，上传到 Codemagic，自动编译产出 .ipa
+workflows:
+  lumen-camera-build:
+    name: Lumen Camera Build
+    environment:
+      xcode: latest
+      groups:
+        - default
+    scripts:
+      - name: Install XcodeGen
+        script: brew install xcodegen
+      - name: Generate Xcode project
+        script: xcodegen generate
+      - name: Build iOS app (no signing)
+        script: |
+          xcodebuild \
+            -project "LumenCamera.xcodeproj" \
+            -scheme "LumenCamera" \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+      - name: Package IPA
+        script: |
+          mkdir -p Payload
+          cp -R "build/Build/Products/Debug-iphoneos/LumenCamera.app" Payload/
+          zip -r LumenCamera.ipa Payload
+    artifacts:
+      - LumenCamera.ipa
+    publishing:
+      email:
+        recipients:
+          - YOUR_EMAIL@example.com  # 改成你的邮箱，编译完会发邮件通知

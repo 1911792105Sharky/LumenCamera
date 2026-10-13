@@ -1,0 +1,33 @@
+# XcodeGen 项目配置
+# 运行 `xcodegen generate` 生成 LumenCamera.xcodeproj
+name: LumenCamera
+options:
+  bundleIdPrefix: com.lumencamera
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.7"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  LumenCamera:
+    type: application
+    platform: iOS
+    sources:
+      - path: .
+        excludes:
+          - "**/.github/**"
+          - "project.yml"
+          - "README.md"
+          - "*.xcodeproj"
+          - "build"
+    info:
+      path: Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lumencamera.app

@@ -1,0 +1,53 @@
+name: Build LumenCamera
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_15.4.app
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build (no code signing)
+        run: |
+          xcodebuild \
+            -project LumenCamera.xcodeproj \
+            -scheme LumenCamera \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          APP_PATH="build/Build/Products/Debug-iphoneos/LumenCamera.app"
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r LumenCamera.ipa Payload
+          rm -rf Payload
+          echo "IPA size: $(du -h LumenCamera.ipa | cut -f1)"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LumenCamera-ipa
+          path: LumenCamera.ipa
+          retention-days: 30
