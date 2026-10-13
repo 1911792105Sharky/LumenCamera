@@ -85,10 +85,10 @@ final class SoftGlowFilter: FilterProtocol {
             return image
         }
         // 屏幕混合：result = 1 - (1 - a) * (1 - b)
-        guard let blend = CIFilter(name: "CIScreenBlendMode", parameters: [
+        guard let blendFilter = CIFilter(name: "CIScreenBlendMode", parameters: [
             kCIInputImageKey: blurred,
             kCIInputBackgroundImageKey: image
-        ]), let output = blend.outputImage else {
+        ]), let output = blendFilter.outputImage else {
             return image
         }
         return blend(original: image, processed: output, intensity: intensity)
@@ -163,10 +163,10 @@ final class CineBloomFilter: FilterProtocol {
         }
 
         // 4. 屏幕混合到原图
-        guard let blend = CIFilter(name: "CIScreenBlendMode", parameters: [
+        guard let blendFilter = CIFilter(name: "CIScreenBlendMode", parameters: [
             kCIInputImageKey: blurred,
             kCIInputBackgroundImageKey: image
-        ]), let output = blend.outputImage else {
+        ]), let output = blendFilter.outputImage else {
             return image
         }
         return blend(original: image, processed: output, intensity: intensity)
